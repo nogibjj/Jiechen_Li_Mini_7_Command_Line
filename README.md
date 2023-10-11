@@ -1,164 +1,93 @@
 [![CI](https://github.com/nogibjj/Jiechen_Li_Mini_6_MySQL/actions/workflows/ci.yml/badge.svg)](https://github.com/nogibjj/Jiechen_Li_Mini_6_MySQL/actions/workflows/ci.yml)
 
-## Jiechen_Li_Mini_6_MySQL
+## Jiechen_Li_Mini_7_Command_Line
 
 ### Purpose
 
-* Design a complex SQL query involving joins, aggregation, and sorting
-* Provide an explanation for what the query is doing and the expected results
+* Package a Python script with setuptools.
+* Include a user guide on how to install and use the tool.
+* Include communication with an external database NoSQL using Azure CosmosDB.
 
-### Dataset
-
-The dataset is sellcted from [DATA.GOV](https://catalog.data.gov/dataset/school-attendance-by-student-group-and-district-2021-2022/resource/d923f39c-c84c-4fa9-a252-c1f6b465bd55) in the United States.
-The dataset appears to represent attendance data for various student groups across different districts in Connecticut for the academic years 2021-2022, 2020-2021, and 2019-2020.
-
-### SQL Query
-
-The goal is to compare the attendance rates of the "All Students" group in the 2021-2022 academic year against the rates in the 2020-2021 academic year for each district. We want to find districts where the attendance rate increased, remained stable (with a variation of less than 1%), or decreased.
-
-1. **Create Tables**
-
-```sql
-CREATE DATABASE School_Attendance;
-DEFAULT CHARACTER SET = 'utf8mb4';
-USE School_Attendance;
-
-CREATE TABLE
-    School_Attendance_Table (
-        District_code VARCHAR(255),
-        District_name VARCHAR(255),
-        Category VARCHAR(255),
-        Student_group VARCHAR(255),
-        `2021-2022_student_count_-_year_to_date` INT,
-        `2021-2022_attendance_rate_-_year_to_date` FLOAT,
-        `2020-2021_student_count` INT,
-        `2020-2021_attendance_rate` FLOAT,
-        `2019-2020_student_count` INT,
-        `2019-2020_attendance_rate` FLOAT,
-        Reporting_period DATE,
-        Date_update DATE
-    );
-
-SET GLOBAL local_infile=1;
-show tables;
-
-LOAD DATA
-    LOCAL INFILE '/Users/castnut/Desktop/706_Data_Engineering/mini_6/Jiechen_Li_Mini_6_External_Database/School_Attendance_by_Student_Group_and_District__2021-2022.csv' INTO
-TABLE
-    School_Attendance_Table FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
-
--- Creating the attendance_2021_2022 table
-CREATE TABLE
-    attendance_2021_2022 (
-        District_code VARCHAR(255),
-        District_name VARCHAR(255),
-        Category VARCHAR(255),
-        Student_group VARCHAR(255),
-        Student_count INT,
-        Attendance_rate FLOAT
-    );
-
--- Inserting data into the attendance_2021_2022 table
-
-INSERT INTO
-    attendance_2021_2022 (
-        District_code,
-        District_name,
-        Category,
-        Student_group,
-        Student_count,
-        Attendance_rate
-    )
-SELECT
-    District_code,
-    District_name,
-    Category,
-    student_group,
-    `2021-2022_student_count_-_year_to_date`,
-    `2021-2022_attendance_rate_-_year_to_date`
-FROM
-    `School_Attendance_Table`;
-
--- Creating the attendance_2020_2021 table
-CREATE TABLE
-    attendance_2020_2021 (
-        District_code VARCHAR(255),
-        District_name VARCHAR(255),
-        Category VARCHAR(255),
-        Student_group VARCHAR(255),
-        Student_count INT,
-        Attendance_rate FLOAT
-    );
-
--- Inserting data into the attendance_2020_2021 table
-INSERT INTO
-    attendance_2020_2021 (
-        District_code,
-        District_name,
-        Category,
-        Student_group,
-        Student_count,
-        Attendance_rate
-    )
-SELECT
-    District_code,
-    District_name,
-    Category,
-    student_group,
-    `2020-2021_student_count`,
-    `2020-2021_attendance_rate`
-FROM
-    `School_Attendance_Table`;
+### Directory Structure
 
 ```
 
-2. **School Attendance Rate Difference**
-
-```sql
-WITH Comparison AS (
-        SELECT
-            a21.District_code,
-            a21.District_name,
-            a21.Attendance_rate AS rate_2021_2022,
-            a20.Attendance_rate AS rate_2020_2021, (
-                a21.Attendance_rate - a20.Attendance_rate
-            ) AS rate_difference
-        FROM
-            attendance_2021_2022 AS a21
-            JOIN attendance_2020_2021 AS a20 ON a21.District_code = a20.District_code
-        WHERE
-            a21.Student_group = 'All Students'
-            AND a20.Student_group = 'All Students'
-    )
-SELECT
-    District_code,
-    District_name,
-    CASE
-        WHEN rate_difference > 0.01 THEN 'Increased'
-        WHEN rate_difference BETWEEN -0.01 AND 0.01 THEN 'Stable'
-        ELSE 'Decreased'
-    END AS Attendance_trend,
-    rate_2021_2022,
-    rate_2020_2021
-FROM Comparison
-ORDER BY rate_difference DESC;
+Jiechen_Li_Mini_7_Command_Line/
+  ├──.devcontainer/
+      ├──.Dockerfile
+      └──devcontainer.jason
+  ├──.github/
+      └──workflows/
+        └──ci.yml
+  ├──.DS_Store
+  ├──.gitignore
+  ├──LICENSE
+  ├──Makefile
+  ├──OlympicTV.csv
+  ├──README.md
+  ├──azure_addcsv.py
+  ├──setup.py
+  └──test_addcsv.py
 ```
 
-### Explanation
+### User Guide
 
-In the WITH clause, I define a Common Table Expression (CTE) called Comparison to join the two tables (attendance_2021_2022 and attendance_2020_2021) based on the District code. This CTE filters the records for the "All Students" group and computes the difference in attendance rates between the two academic years.
+**Setting up the Repository on GitHub**:
 
-In the main query, I use a CASE statement to categorize the attendance trend as 'Increased', 'Stable', or 'Decreased' based on the rate difference.
+1. Create a new repository on GitHub.
+2. Clone the repository to local IDE.
 
-The final results are ordered by "rate_difference" in descending order, meaning districts with the most significant increase in attendance rate will be shown first.
+**Creating the Python Tool**:
+
+1. Create a file called ``azure_addcsv.py``. This will be the main entry point for our command-line tool.
+2. Inside ``azure_addcsv.py``, impoert ``OlympicTV.csv`` and write the Python code to communicate with CosmosDB. This code will use the Azure SDK to interact with Azure services.
+
+**Packaging the Tool**:
+
+1. In the root directory of the repository, create a file called ``setup.py``.
+2. Add the necessary configurations to setup.py for packaging.
+3. Also, modify the ``requirements.txt`` file to list down all the dependencies.
+
+**Deploying Azure CosmosDB**
+
+1. Sign in to Azure.
+2. In the Azure portal, click on "Create a resource".
+3. Search for "Azure Cosmos DB" and select it.
+4. Click on the "Create" button.
+5. Fill in the required fields, and click "Review + Create".
+6. Get the Connection String: Once your Cosmos DB account is deployed, go to the account overview.
+7. Navigate to "Keys" under the "Security + networking" section. Here, you'll find your connection string which will be used to connect to the database.
+8. Create a Database:
+Inside your Cosmos DB account, click on "Data Explorer" from the left menu.
+Click on the "New Container" button.
+First, you'll be prompted to create a new database. Enter a unique name for your database.
+9. Create a Container:
+After specifying the database name, you'll be prompted to create a container.
+Enter a unique name for your container.
+Choose a partition key. This is essential for distributing data and workload across multiple partitions. For simplicity, you can use ``/id`` as the partition key for this guide.
+10. Using tools:
+*Add an item*:
+
+```
+azure_addcsv.py add --database <DATABASE_NAME> --container <CONTAINER_NAME> --item <ITEM_JSON>
+```
+
+*Fetch an item*:
+
+```
+azure_addcsv.py fetch --database <DATABASE_NAME> --container <CONTAINER_NAME> --id <ITEM_ID>
+```
 
 ### Results
 
-The result will be a list of districts, their attendance rates for the "All Students" group in the 2021-2022 and 2020-2021 academic years. The visualization of top 15 districts based on rate difference in attendance is as following:
+**Interaction with Azure CosmosDB**:
+<img decoding="async" src="cosmosdb_show.png" width="85%">  
 
-<img decoding="async" src="comparison_rates.png" width="85%">  
+**Data Insertion**:
+<img decoding="async" src="data_insertion.png" width="85%">  
 
-Please check ``sql_results_plot.py`` for details.
+**Test**:
+<img decoding="async" src="test_result.png" width="85%">  
 
 ### Reference
 
