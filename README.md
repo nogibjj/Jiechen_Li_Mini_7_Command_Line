@@ -23,6 +23,9 @@ Jiechen_Li_Mini_7_Command_Line/
   ├──.gitignore
   ├──LICENSE
   ├──Makefile
+  ├──cosmosdb_show.png
+  ├──data_insertion.png
+  ├──test_result.png
   ├──OlympicTV.csv
   ├──README.md
   ├──azure_addcsv.py
@@ -87,13 +90,13 @@ azure_addcsv.py fetch --database <DATABASE_NAME> --container <CONTAINER_NAME> --
 
 ### Results
 
-**Interaction with Azure CosmosDB**:
+**Interaction with Azure CosmosDB**:<br/>
 <img decoding="async" src="cosmosdb_show.png" width="85%">  
 
-**Data Insertion**:
+**Data Insertion**: <br/>
 <img decoding="async" src="data_insertion.png" width="85%">  
 
-**Test**:
+**Test**: <br/>
 <img decoding="async" src="test_result.png" width="85%">  
 
 ### Reference
