@@ -1,4 +1,4 @@
-[![CI](https://github.com/nogibjj/Jiechen_Li_Mini_6_MySQL/actions/workflows/ci.yml/badge.svg)](https://github.com/nogibjj/Jiechen_Li_Mini_6_MySQL/actions/workflows/ci.yml)
+[![CI](https://github.com/nogibjj/Jiechen_Li_Mini_7_Command_Line/actions/workflows/ci.yml/badge.svg)](https://github.com/nogibjj/Jiechen_Li_Mini_7_Command_Line/actions/workflows/ci.yml)
 
 ## Jiechen_Li_Mini_7_Command_Line
 
@@ -66,6 +66,13 @@ After specifying the database name, you'll be prompted to create a container.
 Enter a unique name for your container.
 Choose a partition key. This is essential for distributing data and workload across multiple partitions. For simplicity, you can use ``/id`` as the partition key for this guide.
 10. Using tools:
+
+*Install the Tool*:
+
+```
+pip install azure-cosmos
+```
+
 *Add an item*:
 
 ```
